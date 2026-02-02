@@ -46,14 +46,62 @@ def save_data(data):
         json.dump(data, f, indent=4)
 
 def get_input(stdscr, base_y, base_x, initial='', start_at_beginning=False):
-    """Safer line editor with cursor movement + vim-style start support"""
+    """Safer line editor with cursor movement + vim-style start support + undo/redo + word navigation"""
     curses.curs_set(1)
     stdscr.keypad(True)
     s = list(initial)
     pos = 0 if start_at_beginning else len(s)
 
+    # Undo/redo history
+    history = [''.join(s)]
+    history_pos = 0
+
     _, max_x = stdscr.getmaxyx()
     display_width = max_x - base_x - 2  # margin
+
+    def save_state():
+        nonlocal history, history_pos
+        current = ''.join(s)
+        # Remove any history after current position
+        history = history[:history_pos + 1]
+        history.append(current)
+        history_pos = len(history) - 1
+        # Limit history to 50 entries
+        if len(history) > 50:
+            history.pop(0)
+            history_pos -= 1
+
+    def undo():
+        nonlocal s, pos, history_pos
+        if history_pos > 0:
+            history_pos -= 1
+            s = list(history[history_pos])
+            pos = min(pos, len(s))
+
+    def redo():
+        nonlocal s, pos, history_pos
+        if history_pos < len(history) - 1:
+            history_pos += 1
+            s = list(history[history_pos])
+            pos = min(pos, len(s))
+
+    def skip_word_left():
+        nonlocal pos
+        # Skip whitespace
+        while pos > 0 and s[pos - 1].isspace():
+            pos -= 1
+        # Skip word
+        while pos > 0 and not s[pos - 1].isspace():
+            pos -= 1
+
+    def skip_word_right():
+        nonlocal pos
+        # Skip word
+        while pos < len(s) and not s[pos].isspace():
+            pos += 1
+        # Skip whitespace
+        while pos < len(s) and s[pos].isspace():
+            pos += 1
 
     while True:
         start = max(0, pos - display_width + 5)
@@ -77,9 +125,63 @@ def get_input(stdscr, base_y, base_x, initial='', start_at_beginning=False):
 
         if key == '\n':
             break
-        elif key == '\x1b':  # Escape key
-            break
+        elif key == '\x01':  # Ctrl+A - jump to start of line
+            pos = 0
+        elif key == '\x05':  # Ctrl+E - jump to end of line
+            pos = len(s)
+        elif key == '\x1b':  # Escape key or start of escape sequence
+            # Check for escape sequences
+            stdscr.nodelay(True)
+            try:
+                next_key = stdscr.getkey()
+                if next_key == 'u':  # Esc + U = undo (vim-style)
+                    undo()
+                elif next_key == 'r':  # Esc + R = redo (vim-style)
+                    redo()
+                elif next_key == 'b':  # Option + Left on macOS (\x1bb)
+                    skip_word_left()
+                elif next_key == 'f':  # Option + Right on macOS (\x1bf)
+                    skip_word_right()
+                elif next_key == '[':  # CSI sequences
+                    seq = stdscr.getkey()
+                    if seq == 'D':  # Left arrow
+                        pos = max(0, pos - 1)
+                    elif seq == 'C':  # Right arrow
+                        pos = min(len(s), pos + 1)
+                    elif seq == '1':  # \x1b[1~ (Home) or \x1b[1;9D (Option+Left)
+                        next_char = stdscr.getkey()
+                        if next_char == '~':  # \x1b[1~ - Home
+                            pos = 0
+                        elif next_char == ';':  # \x1b[1;9D - Option+Left
+                            modifier = stdscr.getkey()
+                            direction = stdscr.getkey()
+                            if modifier == '9' and direction == 'D':
+                                skip_word_left()
+                    elif seq == '4':  # \x1b[4~ (End)
+                        next_char = stdscr.getkey()
+                        if next_char == '~':
+                            pos = len(s)
+                    elif seq == '7':  # \x1b[7~ (Home on some terminals)
+                        next_char = stdscr.getkey()
+                        if next_char == '~':
+                            pos = 0
+                    elif seq == '8':  # \x1b[8~ (End on some terminals)
+                        next_char = stdscr.getkey()
+                        if next_char == '~':
+                            pos = len(s)
+                    else:
+                        # Unknown CSI sequence
+                        pass
+                else:
+                    # Single escape - exit edit mode
+                    break
+            except curses.error:
+                # Timeout or no more keys - treat as single escape
+                break
+            finally:
+                stdscr.nodelay(False)
         elif key in ('KEY_LEFT', 'KEY_BACKSPACE', '\x7f', '\b'):
+            save_state()
             if pos > 0:
                 pos -= 1
                 if key in ('\x7f', '\b'):
@@ -92,9 +194,11 @@ def get_input(stdscr, base_y, base_x, initial='', start_at_beginning=False):
         elif key == 'KEY_END':
             pos = len(s)
         elif key == 'KEY_DC':
+            save_state()
             if pos < len(s):
                 del s[pos]
         elif len(key) == 1 and 32 <= ord(key) <= 126:
+            save_state()
             s.insert(pos, key)
             pos += 1
 
@@ -114,7 +218,17 @@ def show_help():
     print("  Enter     Edit selected item (cursor at end)")
     print("  d         Delete selected task")
     print("  n / p     Shift task next / prev week")
+    print("  Ctrl+U     Undo last action")
+    print("  Ctrl+R     Redo last undone action")
     print("  q         Quit")
+    print()
+    print("In edit mode:")
+    print("  Esc       Exit edit mode")
+    print("  Esc+u     Undo (vim-style)")
+    print("  Esc+r     Redo (vim-style)")
+    print("  Option+←→ Word navigation")
+    print("  Ctrl+A/E  Line navigation (start/end)")
+    print("  Arrow keys Cursor movement")
     sys.exit(0)
 
 def main(stdscr):
@@ -137,6 +251,61 @@ def main(stdscr):
     reorder_mode = False
     scroll_offset = 0
     force_start = False
+
+    # Global undo/redo history
+    undo_history = []
+    undo_pos = -1
+    MAX_UNDO = 20
+
+    # Save initial state
+    initial_data = load_data()
+    undo_history.append(json.dumps(initial_data))
+    undo_pos = 0
+
+    def save_undo_state():
+        nonlocal undo_history, undo_pos
+        # Save current in-memory data, not from disk
+        current_data = data.copy()
+        # Remove any history after current position
+        undo_history = undo_history[:undo_pos + 1]
+        undo_history.append(json.dumps(current_data))
+        undo_pos = len(undo_history) - 1
+        # Limit history
+        if len(undo_history) > MAX_UNDO:
+            undo_history.pop(0)
+            undo_pos -= 1
+
+    def undo():
+        nonlocal undo_history, undo_pos, selected, active, prev, nxt, data
+        if undo_pos > 0:
+            undo_pos -= 1
+            restored_data = json.loads(undo_history[undo_pos])
+            save_data(restored_data)
+            # Reload data immediately
+            data = load_data()
+            active = data[active_week]
+            nxt = data[next_week]
+            prev = data[prev_week]
+            # Adjust selected index
+            selected = max(-1, min(selected, len(active['tasks']) - 1))
+            return True
+        return False
+
+    def redo():
+        nonlocal undo_history, undo_pos, selected, active, prev, nxt, data
+        if undo_pos < len(undo_history) - 1:
+            undo_pos += 1
+            restored_data = json.loads(undo_history[undo_pos])
+            save_data(restored_data)
+            # Reload data immediately
+            data = load_data()
+            active = data[active_week]
+            nxt = data[next_week]
+            prev = data[prev_week]
+            # Adjust selected index
+            selected = max(-1, min(selected, len(active['tasks']) - 1))
+            return True
+        return False
 
     while True:
         data = load_data()
@@ -274,7 +443,7 @@ def main(stdscr):
         # Help bar
         mode = " [REORDER]" if reorder_mode else ""
         hint = " (after selected)" if 0 <= selected < len(active['tasks']) else " (at end)"
-        help_txt = f"↑↓/kj:Move{'/Reorder'+mode} | r:Reorder | ←→:Week | Tab/S-Tab:State | I:Edit@start | a:Add{hint} | ⏎:Edit (title if none selected) | d:Del | n/p:Shift | q:Quit"
+        help_txt = f"↑↓/kj:Move{'/Reorder'+mode} | r:Reorder | ←→:Week | Tab/S-Tab:State | I:Edit@start | a:Add{hint} | ⏎:Edit | d:Del | n/p:Shift | Ctrl+U:Undo | Ctrl+R:Redo | q:Quit"
         if maxy - 1 < maxy:
             stdscr.addstr(maxy - 1, 0, help_txt[:maxx - 1], curses.A_DIM)
 
@@ -301,6 +470,14 @@ def main(stdscr):
         key = stdscr.getkey()
         force_start = False
 
+        # Handle control key sequences
+        if key == '\x15':  # Ctrl+U = undo
+            if undo():
+                continue
+        elif key == '\x12':  # Ctrl+R = redo
+            if redo():
+                continue
+
         # Normal mode commands
         if key.lower() == 'q':
             save_data(data)
@@ -310,9 +487,11 @@ def main(stdscr):
         elif key == '\t' and 0 <= selected < len(active['tasks']):
             active['tasks'][selected]['state'] = STATE_CYCLE_FORWARD[active['tasks'][selected]['state']]
             save_data(data)
+            save_undo_state()
         elif key == '\x1b[Z' and 0 <= selected < len(active['tasks']):
             active['tasks'][selected]['state'] = STATE_CYCLE_BACKWARD[active['tasks'][selected]['state']]
             save_data(data)
+            save_undo_state()
         elif key == 'I':  # Shift+I - edit at start
             if selected == -1 or 0 <= selected < len(active['tasks']):
                 edit_mode = True
@@ -324,6 +503,7 @@ def main(stdscr):
                     tasks[selected-1], tasks[selected] = tasks[selected], tasks[selected-1]
                     selected -= 1
                     save_data(data)
+                    save_undo_state()
             else:
                 if selected > 0:
                     selected -= 1
@@ -336,6 +516,7 @@ def main(stdscr):
                     tasks[selected+1], tasks[selected] = tasks[selected], tasks[selected+1]
                     selected += 1
                     save_data(data)
+                    save_undo_state()
             else:
                 if selected == -1 and tasks:
                     selected = 0
@@ -362,6 +543,7 @@ def main(stdscr):
                 tasks.insert(pos, new_task)
                 selected = pos
             save_data(data)
+            save_undo_state()
             edit_mode = True
             force_start = False
         elif key == '\n' and selected is not None:
@@ -371,6 +553,7 @@ def main(stdscr):
             del active['tasks'][selected]
             selected = max(-1, selected - 1)
             save_data(data)
+            save_undo_state()
         elif key.lower() in ('n', 'p') and 0 <= selected < len(active['tasks']):
             tasks = active['tasks']
             task = tasks.pop(selected)
@@ -382,6 +565,7 @@ def main(stdscr):
             data[target_week]['tasks'].append(task)
             selected = max(-1, min(selected, len(tasks) - 1))
             save_data(data)
+            save_undo_state()
 
 if __name__ == '__main__':
     curses.wrapper(main)
