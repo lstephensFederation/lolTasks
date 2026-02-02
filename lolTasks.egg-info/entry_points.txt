@@ -1,3 +1,0 @@
-[console_scripts]
-lolTasks = task:entry_point
-task = task:entry_point

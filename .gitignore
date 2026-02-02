@@ -1,0 +1,32 @@
+# Build and distribution
+build/
+dist/
+*.egg-info/
+__pycache__/
+*.pyc
+*.pyo
+
+# Data files
+*.json
+!task_spec.md
+
+# Backup files
+*.backup.*
+*.dead.*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Test files
+test_*.py
+tests/
+
+# Logs
+*.log
