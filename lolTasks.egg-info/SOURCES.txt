@@ -1,0 +1,11 @@
+LICENSE
+MANIFEST.in
+README.md
+setup.py
+task.py
+task_spec.md
+lolTasks.egg-info/PKG-INFO
+lolTasks.egg-info/SOURCES.txt
+lolTasks.egg-info/dependency_links.txt
+lolTasks.egg-info/entry_points.txt
+lolTasks.egg-info/top_level.txt

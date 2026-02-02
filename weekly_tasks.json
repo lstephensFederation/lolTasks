@@ -1,0 +1,248 @@
+{
+    "2026-W03": {
+        "title": "Second week back",
+        "tasks": [
+            {
+                "text": "task built open source tool (beta 1) of task command line tool (this)",
+                "state": "COMPLETED"
+            },
+            {
+                "text": "SSL for harrington-junior (btp-room-booking-non-prod)",
+                "state": "COMPLETED"
+            },
+            {
+                "text": "Respondus attempted install failed, handballed ticket",
+                "state": "COMPLETED"
+            },
+            {
+                "text": "isWiki User Access: might have page access trouble but not very communicative. Advised i'd help if this happens.",
+                "state": "COMPLETED"
+            },
+            {
+                "text": "Moodle Authentication failure for a user [INC0230027]",
+                "state": "COMPLETED"
+            },
+            {
+                "text": "Handballed ticket to Digital Channels are Strategy for user access to opti",
+                "state": "COMPLETED"
+            },
+            {
+                "text": "Moodle authenticaiton issue no user found [waiting for user to login]",
+                "state": "COMPLETED"
+            },
+            {
+                "text": "Moodle 4.5 Launch Party",
+                "state": "COMPLETED"
+            },
+            {
+                "text": "task: bug -> when list longer than viewport can't see/navigate to those items outside viewport",
+                "state": "COMPLETED"
+            },
+            {
+                "text": "task: bug -> when multiple task files are open changes aren't reflected",
+                "state": "COMPLETED"
+            }
+        ]
+    },
+    "2026-W02": {
+        "title": "First week back",
+        "tasks": [
+            {
+                "text": "BIH Brought back to life ./Luke.Scripts/kick",
+                "state": "COMPLETED"
+            },
+            {
+                "text": "isWiki Infrastructure SSL certificate expired, deployed to Azure App via Peter",
+                "state": "COMPLETED"
+            },
+            {
+                "text": "Moodle  Federation Online: User sync issue ldap to OpenID",
+                "state": "COMPLETED"
+            },
+            {
+                "text": "BIH Security hardened by removing access to admin interface, SSL v3 ",
+                "state": "COMPLETED"
+            },
+            {
+                "text": "StudySkills Security hardened by restricting admin interfaces to internal VPN, moving default pages & resitrcting cron/user API",
+                "state": "COMPLETED"
+            },
+            {
+                "text": "One Note -> Process: Resolving Federation Online Account Sync Issues ",
+                "state": "COMPLETED"
+            }
+        ]
+    },
+    "2026-W04": {
+        "title": "Third Week, studyskills, moodle and crux",
+        "tasks": [
+            {
+                "text": "StudySkills fix not being able to login",
+                "state": "COMPLETED"
+            },
+            {
+                "text": "Crux enhanced ability to see referal",
+                "state": "COMPLETED"
+            },
+            {
+                "text": "Professional Development: Moodle Academy [Sam discussion]",
+                "state": "COMPLETED"
+            },
+            {
+                "text": "StudySkills fix root cause of login problem (plugin dead)",
+                "state": "COMPLETED"
+            },
+            {
+                "text": "Fed News SQLite version to explore historic entries",
+                "state": "COMPLETED"
+            },
+            {
+                "text": "Fed News SQLite Archive interface",
+                "state": "COMPLETED"
+            },
+            {
+                "text": "Fed News SQLite secured on study-archive using /export-tool as a launchpad",
+                "state": "COMPLETED"
+            },
+            {
+                "text": "Export Tool: Hyperlink support",
+                "state": "COMPLETED"
+            },
+            {
+                "text": "Moodle: Find out IP address restrictions campus included, where admin add/remove, comma del? [Naomi]",
+                "state": "COMPLETED"
+            }
+        ]
+    },
+    "2026-W01": {
+        "title": "HOLIDAYS",
+        "tasks": []
+    },
+    "2026-W05": {
+        "title": "Moodle 4.5 & Microsoft Entra (Azure, Ad rebranded)",
+        "tasks": [
+            {
+                "text": "Meeting Notes for eLearning and TAFE Monthly meeting",
+                "state": "COMPLETED"
+            },
+            {
+                "text": "WebApps Files backed up",
+                "state": "COMPLETED"
+            },
+            {
+                "text": "Moodle Outage 0804: Erin communicated to General under Ed Tech Comms [Reactive]",
+                "state": "COMPLETED"
+            },
+            {
+                "text": "Moodle Outage 0811: Checked logs, created PDF extract of last logs. [Proactive]",
+                "state": "COMPLETED"
+            },
+            {
+                "text": "Moodle Outage 0958: Banner created for outage (global) [Reactive/Proactive]",
+                "state": "COMPLETED"
+            },
+            {
+                "text": "Moodle Outage 1101: Setup a banner for service restored with KB for cache refresh. [Reactive/Proactive]",
+                "state": "COMPLETED"
+            },
+            {
+                "text": "Moodle Outage Service appears to be healthy again",
+                "state": "COMPLETED"
+            },
+            {
+                "text": "Moodle Retrospec.",
+                "state": "COMPLETED"
+            },
+            {
+                "text": "Prepare Documentation for Sync Jobs [Beta version of doc created]",
+                "state": "COMPLETED"
+            },
+            {
+                "text": "Determine remote campus IP addresses from logs [did as much as i could]",
+                "state": "COMPLETED"
+            },
+            {
+                "text": "Sam send copy of audit findings",
+                "state": "COMPLETED"
+            }
+        ]
+    },
+    "2025-W52": {
+        "title": "Week title",
+        "tasks": []
+    },
+    "2026-W06": {
+        "title": "Next",
+        "tasks": [
+            {
+                "text": "task: git repo",
+                "state": "COMPLETED"
+            },
+            {
+                "text": "task 1: esc + z and esc + u buffer for undo and redo",
+                "state": "COMPLETED"
+            },
+            {
+                "text": "task 1: esc behaviour same as enter for leaving edit mode",
+                "state": "COMPLETED"
+            },
+            {
+                "text": "Moodle Academy begin",
+                "state": "TO-DO"
+            },
+            {
+                "text": "Audit Server Logs: Create script",
+                "state": "PENDING"
+            },
+            {
+                "text": "Audit Server (Update ~/.ssh/conf list of server)",
+                "state": "PENDING"
+            },
+            {
+                "text": "Export Tool determine the root cause of discrepency between API count and not",
+                "state": "PENDING"
+            },
+            {
+                "text": "Export Tool naming of postfix (API) versus derived stuff",
+                "state": "TO-DO"
+            },
+            {
+                "text": "One Note -> Process isWiki Documentation for access groups ",
+                "state": "TO-DO"
+            }
+        ]
+    },
+    "2026-W07": {
+        "title": "Week title",
+        "tasks": [
+            {
+                "text": "task 1.1: config file of where task is saved to and default mode for entire system so when admins from different users login they know what tasks were done or not done or to be done. when task runs for first time ask where to send config file ~/ or /opt/task/system_weekly_tasks.json",
+                "state": "TO-DO"
+            },
+            {
+                "text": "task: upload to internet repo somewhere",
+                "state": "TO-DO"
+            },
+            {
+                "text": "task: publish to pip",
+                "state": "TO-DO"
+            },
+            {
+                "text": "task: left + right arrow bug ubuntu",
+                "state": "TO-DO"
+            },
+            {
+                "text": "lolService: fix the two factor problem",
+                "state": "TO-DO"
+            },
+            {
+                "text": "task: ASCII support",
+                "state": "TO-DO"
+            }
+        ]
+    },
+    "2026-W08": {
+        "title": "Week title",
+        "tasks": []
+    }
+}

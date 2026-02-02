@@ -1,0 +1,15 @@
+{
+    "2026-03": {
+        "title": "What we are in week 3 already",
+        "tasks": [
+            {
+                "text": "The other thing",
+                "state": "COMPLETED"
+            },
+            {
+                "text": "The thing",
+                "state": "TO-DO"
+            }
+        ]
+    }
+}
